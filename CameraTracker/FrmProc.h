@@ -16,15 +16,15 @@ protected:
 	void SetVideoCapture();
 public:
 	double scale;
-	double uThreshold;
-	double lThreshold;
-	cv::Size padding;
+	double weight;
+	double hitThresh;
 	cv::Size winStride;
+	cv::Size padding;
 	std::thread thread;
 	static void RunThread(FrmProc* frmProc);
 	static void StopThread(FrmProc* frmProc);
 	static FrmProc* GetInstance();
 	cv::Mat ResizeFrm(cv::Mat frm, int minWidth, int minHeight);
 	void SetPathName(LPCTSTR lpszPathName);
-	void SetAttributes(double scale, double uThreshold, double lThreshold);
+	void SetAttributes(double scale, double weight, double hitThresh, int winStride, int padding);
 };

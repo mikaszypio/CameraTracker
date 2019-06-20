@@ -102,28 +102,7 @@ void CCameraTrackerDoc::Dump(CDumpContext& dc) const
 
 // Polecenia CCameraTrackerDoc
 
-void CCameraTrackerDoc::SetNeighbors(int value)
-{
-	lThresh = value;
-	frmProc->SetAttributes(scale, lThresh, uThresh);
-}
-
-void CCameraTrackerDoc::SetMinSize(int value)
-{
-	uThresh = value;
-	frmProc->SetAttributes(scale, lThresh, uThresh);
-}
-
-void CCameraTrackerDoc::SetScaleFact(int value)
-{
-	scale = (double)value / 1000000;
-	frmProc->SetAttributes(scale, lThresh, uThresh);
-}
-
 void CCameraTrackerDoc::SetAnalyzerAttr(double scale, double weight, double hitThresh, int winStride, int padding)
 {
-	/*this->scale = (double)scale / 1000000;
-	this->uThresh = (double)uThreshold / 100;
-	this->lThresh = (double)lThreshold / 100;
-	frmProc->SetAttributes(this->scale, this->uThresh, this->lThresh);*/
+	frmProc->SetAttributes(scale, weight, hitThresh, winStride, padding);
 }

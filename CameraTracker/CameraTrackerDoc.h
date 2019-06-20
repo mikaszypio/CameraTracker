@@ -19,9 +19,6 @@ protected: // utwórz tylko na podstawie serializacji
 	double uThresh;
 // Atrybuty
 public:
-	void SetScaleFact(int val);
-	void SetNeighbors(int val);
-	void SetMinSize(int val);
 	void SetAnalyzerAttr(double scale, double weight, double hitThresh, int winStride, int padding);
 // Operacje
 public:

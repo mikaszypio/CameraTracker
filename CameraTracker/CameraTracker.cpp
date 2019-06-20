@@ -155,8 +155,3 @@ void CCameraTrackerApp::OnAppAbout()
 	CAboutDlg aboutDlg;
 	aboutDlg.DoModal();
 }
-
-// procedury obsługi komunikatów klasy CCameraTrackerApp
-
-
-

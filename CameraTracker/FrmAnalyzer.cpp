@@ -24,7 +24,8 @@ Pedestrian FrmAnalyzer::DrawVector(cv::Mat frm, Pedestrian prevPed, Pedestrian p
 	return ped;
 }
 
-cv::Mat FrmAnalyzer::DetectSilhouettes(cv::Mat frm, double scale, double lThresh, double uThresh)
+cv::Mat FrmAnalyzer::DetectSilhouettes(cv::Mat frm, double scale, double weight, double hitThresh,
+	cv::Size winStride, cv::Size padding)
 {
 	std::vector<cv::Rect> bodies;
 	std::vector<double> weights;
@@ -136,7 +137,6 @@ std::vector<Pedestrian> FrmAnalyzer::TrackSilhouettes(cv::Mat frm)
 
 int FrmAnalyzer::FindPedestrian(cv::Point2f feature, std::vector<Pedestrian> pedestrians)
 {
-	int index;
 	for (int i = (int)pedestrians.size()-1; i > -1; i--)
 	{
 		if (pedestrians[i].InRange(feature, 10))

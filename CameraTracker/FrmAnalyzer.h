@@ -22,6 +22,7 @@ protected:
 	std::vector<Pedestrian> UpdateSilhouettes(std::vector<cv::Rect> bodies, std::vector<Pedestrian> pedestrians);
 public:
 	FrmAnalyzer();
-	cv::Mat DetectSilhouettes(cv::Mat frm, double scale = 1.05, double lThresh = 127, double uThresh = 255);
+	cv::Mat DetectSilhouettes(cv::Mat frm, double scale = 1.05, double weight = -1, double hitThresh = 0,
+		cv::Size winStride = cv::Size(), cv::Size padding = cv::Size());
 };
 

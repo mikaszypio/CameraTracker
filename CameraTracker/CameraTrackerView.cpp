@@ -13,9 +13,8 @@
 #define new DEBUG_NEW
 #endif
 
-#ifndef CAMTRACK_DIVIDER
-#define CAMTRACK_DIVIDER 1000000
-#endif
+#define CAMTRACKVIEW_DIVIDER 1000000
+#define CAMTRACKVIEW_FCHARS ".01234567890"
 
 // CCameraTrackerView
 
@@ -27,6 +26,9 @@ BEGIN_MESSAGE_MAP(CCameraTrackerView, CFormView)
 	ON_EN_KILLFOCUS(IDC_EDIT_WEIGHTS, &CCameraTrackerView::OnEnKillfocusEdit)
 	ON_EN_KILLFOCUS(IDC_EDIT_HTHRESH, &CCameraTrackerView::OnEnKillfocusEdit)
 	ON_EN_UPDATE(IDC_EDIT_HTHRESH, &CCameraTrackerView::OnEnUpdateEditHthresh)
+	ON_EN_UPDATE(IDC_EDIT_SCALE, &CCameraTrackerView::OnEnUpdateEditScale)
+	ON_EN_UPDATE(IDC_EDIT_WEIGHTS, &CCameraTrackerView::OnEnUpdateEditWeights)
+	ON_BN_CLICKED(IDC_CHECK_OFFON, &CCameraTrackerView::OnBnClickedCheckOffOn)
 END_MESSAGE_MAP()
 
 // Tworzenie/niszczenie obiektu CCameraTrackerView
@@ -64,9 +66,9 @@ void CCameraTrackerView::DoDataExchange(CDataExchange* pDX)
 BOOL CCameraTrackerView::PreCreateWindow(CREATESTRUCT& cs)
 {
 	// TODO: zmodyfikuj klasę Window lub style w tym miejscu, modyfikując
-	//  styl kaskadowy CREATESTRUCT
+//  styl kaskadowy CREATESTRUCT
 
-	return CFormView::PreCreateWindow(cs);
+return CFormView::PreCreateWindow(cs);
 }
 
 void CCameraTrackerView::OnInitialUpdate()
@@ -75,19 +77,23 @@ void CCameraTrackerView::OnInitialUpdate()
 	GetParentFrame()->RecalcLayout();
 	ResizeParentToFit();
 
-	m_sliderCtrlScale.SetRange(CAMTRACK_DIVIDER, CAMTRACK_DIVIDER * 3, TRUE);
-	m_sliderCtrlWeight.SetRange(0, CAMTRACK_DIVIDER * 2, TRUE);
-	m_sliderCtrlHThresh.SetRange(0, CAMTRACK_DIVIDER * 2, TRUE);
+	m_sliderCtrlScale.SetRange(CAMTRACKVIEW_DIVIDER, CAMTRACKVIEW_DIVIDER * 3, TRUE);
+	m_sliderCtrlWeight.SetRange(0, CAMTRACKVIEW_DIVIDER * 2, TRUE);
+	m_sliderCtrlHThresh.SetRange(0, CAMTRACKVIEW_DIVIDER * 2, TRUE);
 	m_sliderCtrlWinStride.SetRange(0, 16, TRUE);
 	m_sliderCtrlPadding.SetRange(0, 16, TRUE);
 
-	m_sliderCtrlScale.SetPos(CAMTRACK_DIVIDER * 1.05);
+	m_sliderCtrlScale.SetPos((int)CAMTRACKVIEW_DIVIDER * 1.05);
 	m_sliderCtrlWeight.SetPos(0);
 	m_sliderCtrlHThresh.SetPos(0);
 
 	m_staticScaleVal.SetWindowTextW(GetLabelStr(IDS_SCALE));
 	m_staticWeightVal.SetWindowTextW(GetLabelStr(IDS_WEIGHT));
 	m_staticWeightVal.SetWindowTextW(GetLabelStr(IDS_HITTHRESH));
+
+	SetCEdit(m_editCtrlScale, m_sliderCtrlScale);
+	SetCEdit(m_editCtrlWeight, m_sliderCtrlWeight);
+	SetCEdit(m_editCtrlHThresh, m_sliderCtrlHThresh);
 }
 
 void CCameraTrackerView::OnDraw(CDC* pDC)
@@ -98,7 +104,7 @@ void CCameraTrackerView::OnDraw(CDC* pDC)
 		return;
 
 	CRect rect;
-	CWnd *dlgItem = GetDlgItem(IDC_STATIC_PIC);
+	CWnd* dlgItem = GetDlgItem(IDC_STATIC_PIC);
 	dlgItem->GetWindowRect(rect);
 
 	cv::destroyAllWindows();
@@ -156,14 +162,34 @@ void CCameraTrackerView::OnEnKillfocusEdit()
 	UpdateValues();
 }
 
-void CCameraTrackerView::OnEnUpdateEditHthresh()
+void CCameraTrackerView::OnEnUpdateEdit(CEdit& cedit)
 {
-
+	CString cstr;
+	cedit.GetWindowTextW(cstr);
+	if (!ValidateCEditInput(cstr))
+	{
+		if (cstr.IsEmpty())
+			return;
+		cedit.SetWindowTextW(cstr.SpanExcluding(_T(CAMTRACKVIEW_FCHARS)));
+	}
 }
 
+void CCameraTrackerView::OnEnUpdateEditHthresh()
+{
+	OnEnUpdateEdit(m_editCtrlHThresh);
+}
+
+void CCameraTrackerView::OnEnUpdateEditScale()
+{
+	OnEnUpdateEdit(m_editCtrlScale);
+}
+
+void CCameraTrackerView::OnEnUpdateEditWeights()
+{
+	OnEnUpdateEdit(m_editCtrlWeight);
+}
 
 // Metody pomocnicze
-
 
 CString CCameraTrackerView::GetLabelStr(UINT ids, int value)
 {
@@ -174,41 +200,38 @@ CString CCameraTrackerView::GetLabelStr(UINT ids, int value)
 	if (value == -1)
 		return idsString;
 
-	switch (ids)
-	{
-	default:
-		valString.Format(_T(": %d"), value);
-		break;
-	}
-
+	valString.Format(_T(": %d"), value);
 	return idsString + valString;
 }
 
 void CCameraTrackerView::UpdateValues()
 {
 	CCameraTrackerDoc* pDoc = GetDocument();
-	double scale = (double)m_sliderCtrlScale.GetPos() / CAMTRACK_DIVIDER;
-	double weight = (double)m_sliderCtrlWeight.GetPos() / CAMTRACK_DIVIDER;
-	double hitThresh = (double)m_sliderCtrlHThresh.GetPos() / CAMTRACK_DIVIDER;
+	double scale = (double)m_sliderCtrlScale.GetPos() / CAMTRACKVIEW_DIVIDER;
+	double weight = (double)m_sliderCtrlWeight.GetPos() / CAMTRACKVIEW_DIVIDER;
+	double hitThresh = (double)m_sliderCtrlHThresh.GetPos() / CAMTRACKVIEW_DIVIDER;
 	int winStride = m_sliderCtrlWinStride.GetPos();
 	int padding = m_sliderCtrlPadding.GetPos();
 
-	m_staticWeightVal.SetWindowTextW(GetLabelStr(IDS_WINSTRIDE, winStride));
-	m_staticPadding.SetWindowTextW(GetLabelStr(IDS_Padding, padding));
+	m_staticWinStrideVal.SetWindowTextW(GetLabelStr(IDS_WINSTRIDE, winStride));
+	m_staticPadding.SetWindowTextW(GetLabelStr(IDS_PADDING, padding));
 	pDoc->SetAnalyzerAttr(scale, weight, hitThresh, winStride, padding);
 }
 
-bool CCameraTrackerView::SetCSlider(CSliderCtrl& cslider, CEdit& cedit)
+void CCameraTrackerView::SetCSlider(CSliderCtrl& cslider, CEdit& cedit)
 {
 	CString cstr;
 	cedit.GetWindowTextW(cstr);
-	double val = _tstof(cstr) * CAMTRACK_DIVIDER;
-	cslider.SetPos((int)val);
+	if (ValidateCEditInput(cstr))
+	{
+		double val = _tstof(cstr) * CAMTRACKVIEW_DIVIDER;
+		cslider.SetPos((int)val);
+	}
 }
 
-bool CCameraTrackerView::SetCEdit(CEdit& cedit, CSliderCtrl& cslider)
+void CCameraTrackerView::SetCEdit(CEdit& cedit, CSliderCtrl& cslider)
 {
-	double val = (double)cslider.GetPos() * CAMTRACK_DIVIDER;
+	double val = (double)cslider.GetPos() / CAMTRACKVIEW_DIVIDER;
 	CString str;
 	str.Format(_T("%f"), val);
 	cedit.SetWindowTextW(str);
@@ -224,5 +247,11 @@ bool CCameraTrackerView::ValidateCEditInput(CEdit& cedit)
 bool CCameraTrackerView::ValidateCEditInput(CString cstr)
 {
 	if (cstr.IsEmpty()) return false;
-	return cstr.SpanIncluding(_T(".0123456789")) == cstr;
+	return cstr.SpanIncluding(_T(CAMTRACKVIEW_FCHARS)) == cstr;
+}
+
+
+void CCameraTrackerView::OnBnClickedCheckOffOn()
+{
+	
 }

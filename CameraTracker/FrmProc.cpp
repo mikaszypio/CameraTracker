@@ -7,8 +7,6 @@ FrmProc::FrmProc()
 	isRunning = false;
 	analyzer = FrmAnalyzer();
 	scale = 1.05;
-	uThreshold = 255;
-	lThreshold = 127;
 }
 
 FrmProc* FrmProc::s_instance = NULL;
@@ -42,7 +40,7 @@ void FrmProc::Run()
 	while (isRunning && videoCapture.read(capturedFrm))
 	{
 		cv::Mat frm = ResizeFrm(capturedFrm, 640, 480);
-		frm = analyzer.DetectSilhouettes(frm, scale, lThreshold, uThreshold);
+		frm = analyzer.DetectSilhouettes(frm, scale, weight, hitThresh, winStride, padding);
 		cv::resize(frm, frm, cv::Size(640, 480), 0, 0, cv::INTER_LINEAR);
 		cv::imshow("IDC_STATIC_OUTPUT", frm);
 		cv::waitKey(15);
@@ -73,9 +71,11 @@ void FrmProc::SetVideoCapture()
 	else videoCapture.open(pathName);
 }
 
-void FrmProc::SetAttributes(double scale, double uThreshold, double lThreshold)
+void FrmProc::SetAttributes(double scale, double weight, double hitThresh, int winStride, int padding)
 {
 	this->scale = scale;
-	this->uThreshold = uThreshold;
-	this->lThreshold = lThreshold;
+	this->weight = weight;
+	this->hitThresh = hitThresh;
+	this->winStride = cv::Size(winStride, winStride);
+	this->padding = cv::Size(padding, padding);
 }

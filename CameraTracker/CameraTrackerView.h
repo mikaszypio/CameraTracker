@@ -12,8 +12,8 @@ protected: // utwórz tylko na podstawie serializacji
 	DECLARE_DYNCREATE(CCameraTrackerView)
 	CString GetLabelStr(UINT ids, int value = -1);
 	void UpdateValues();
-	bool SetCSlider(CSliderCtrl& cslider, CEdit& cedit);
-	bool SetCEdit(CEdit& cedit, CSliderCtrl& cslider);
+	void SetCSlider(CSliderCtrl& cslider, CEdit& cedit);
+	void SetCEdit(CEdit& cedit, CSliderCtrl& cslider);
 	bool ValidateCEditInput(CEdit& cedit);
 	bool ValidateCEditInput(CString cstr);
 public:
@@ -49,6 +49,7 @@ protected:
 // Wygenerowano funkcje mapy komunikatów
 protected:
 	DECLARE_MESSAGE_MAP()
+	void OnEnUpdateEdit(CEdit& cedit);
 public:
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	CSliderCtrl m_sliderCtrlScale;
@@ -68,8 +69,10 @@ public:
 	CButton m_checkOffOn;
 	CMFCButton m_MfcButtonPauseOn;
 	CMFCButton m_MfcButtonPauseOff;
-	afx_msg void OnEnChangeEditHthresh();
 	afx_msg void OnEnUpdateEditHthresh();
+	afx_msg void OnEnUpdateEditScale();
+	afx_msg void OnEnUpdateEditWeights();
+	afx_msg void OnBnClickedCheckOffOn();
 };
 
 #ifndef _DEBUG  // debuguj wersję w elemencie CameraTrackerView.cpp
