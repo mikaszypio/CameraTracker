@@ -1,0 +1,15 @@
+﻿REGEDIT
+; Tego pliku REG może użyć program instalacyjny.
+;   Jeśli program instalacyjny nie jest dostępny, pozycje poniżej będą
+;   zarejestrowane automatycznie w elemencie InitInstance za pomocą wywołania
+;   CWinApp::RegisterShellFileTypes i COleObjectFactory::UpdateRegistryAll.
+
+HKEY_CLASSES_ROOT\.avi = AVI.VideoClip
+HKEY_CLASSES_ROOT\AVI.VideoClip\shell\open\command = CameraTracker.EXE %1
+HKEY_CLASSES_ROOT\AVI.VideoClip\shell\open\ddeexec = [open("%1")]
+HKEY_CLASSES_ROOT\AVI.VideoClip\shell\open\ddeexec\application = CameraTracker
+    ; uwaga: aplikacja jest opcjonalna
+    ;  (domyślnie to nazwa aplikacji w poleceniu)
+
+HKEY_CLASSES_ROOT\AVI.VideoClip = AVI.VideoClip
+
