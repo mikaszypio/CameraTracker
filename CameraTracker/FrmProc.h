@@ -34,6 +34,7 @@ public:
 	cv::Size winStride;
 	cv::Size padding;
 	std::thread thread;
+	bool detectionStatus;
 
 	void DisplayImage();
 	static FrmProc* GetInstance();

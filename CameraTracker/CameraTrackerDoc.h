@@ -26,6 +26,7 @@ public:
 // Operacje
 public:
 	void SetImgSize(LONG width, LONG height);
+	void SetAnalyzerOnOff(bool status);
 // Przesłania
 public:
 	virtual BOOL OnNewDocument();

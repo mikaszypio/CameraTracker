@@ -43,8 +43,8 @@ void FrmProc::Run()
 	while (isRunning && videoCapture.read(capturedFrm))
 	{
 		frame = ResizeFrm(capturedFrm, 640, 480);
-		frame = analyzer.DetectSilhouettes(frame, scale, weight, hitThresh, winStride, padding);
-		ResizeFrm(frame, bitmapSize.width, bitmapSize.height);
+		if (detectionStatus)
+			frame = analyzer.DetectSilhouettes(frame, scale, weight, hitThresh, winStride, padding);
 		if (pictureBox != NULL && bitmapSizeSet) DisplayImage();
 		cv::waitKey(15);
 	}
@@ -122,11 +122,12 @@ BITMAPINFO FrmProc::CreateBitmapInfo(BITMAPINFOHEADER header)
 
 BITMAPINFOHEADER FrmProc::CreateBitmapHeader(cv::Mat frm)
 {
+	cv::Size frmSize = frm.size();
 	BITMAPINFOHEADER header = BITMAPINFOHEADER{};
 	ZeroMemory(&header, sizeof(header));
 	header.biSize = sizeof(header);
-	header.biWidth = bitmapSize.width;
-	header.biHeight = -(bitmapSize.height);
+	header.biWidth = frmSize.width;
+	header.biHeight = -(frmSize.height);
 	header.biPlanes = 1;
 	header.biBitCount = frm.channels() * 8;
 	return header;

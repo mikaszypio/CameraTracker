@@ -74,6 +74,8 @@ public:
 	afx_msg void OnEnUpdateEditWeights();
 	afx_msg void OnBnClickedCheckOffOn();
 	CStatic m_staticPic;
+	afx_msg void OnBnClickedMfcbuttonPauseon();
+	afx_msg void OnBnClickedMfcbuttonPauseoff();
 };
 
 #ifndef _DEBUG  // debuguj wersję w elemencie CameraTrackerView.cpp

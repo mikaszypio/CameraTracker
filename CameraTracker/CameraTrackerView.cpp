@@ -29,7 +29,9 @@ BEGIN_MESSAGE_MAP(CCameraTrackerView, CFormView)
 	ON_EN_UPDATE(IDC_EDIT_HTHRESH, &CCameraTrackerView::OnEnUpdateEditHthresh)
 	ON_EN_UPDATE(IDC_EDIT_SCALE, &CCameraTrackerView::OnEnUpdateEditScale)
 	ON_EN_UPDATE(IDC_EDIT_WEIGHTS, &CCameraTrackerView::OnEnUpdateEditWeights)
-	/*ON_BN_CLICKED(IDC_CHECK_OFFON, &CCameraTrackerView::OnBnClickedCheckOffOn)*/
+	ON_BN_CLICKED(IDC_CHECK_OFFON, &CCameraTrackerView::OnBnClickedCheckOffOn)
+	ON_BN_CLICKED(IDC_MFCBUTTON_PAUSEON, &CCameraTrackerView::OnBnClickedMfcbuttonPauseon)
+	ON_BN_CLICKED(IDC_MFCBUTTON_PAUSEOFF, &CCameraTrackerView::OnBnClickedMfcbuttonPauseoff)
 END_MESSAGE_MAP()
 
 // Tworzenie/niszczenie obiektu CCameraTrackerView
@@ -247,5 +249,20 @@ bool CCameraTrackerView::ValidateCEditInput(CString cstr)
 
 void CCameraTrackerView::OnBnClickedCheckOffOn()
 {
-	
+	CCameraTrackerDoc* pDoc = GetDocument();
+	pDoc->SetAnalyzerOnOff(m_checkOffOn.GetState());
+}
+
+
+void CCameraTrackerView::OnBnClickedMfcbuttonPauseon()
+{
+	m_MfcButtonPauseOn.EnableWindow(FALSE);
+	m_MfcButtonPauseOff.EnableWindow();
+}
+
+
+void CCameraTrackerView::OnBnClickedMfcbuttonPauseoff()
+{
+	m_MfcButtonPauseOff.EnableWindow(FALSE);
+	m_MfcButtonPauseOn.EnableWindow();
 }

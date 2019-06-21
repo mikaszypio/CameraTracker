@@ -117,3 +117,8 @@ void CCameraTrackerDoc::SetProcPictureCtrl(CStatic* cstatic)
 {
 	frmProc->SetPictureBox(cstatic);
 }
+
+void CCameraTrackerDoc::SetAnalyzerOnOff(bool status)
+{
+	frmProc->detectionStatus = status;
+}
