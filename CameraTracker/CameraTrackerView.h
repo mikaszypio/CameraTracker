@@ -67,15 +67,17 @@ public:
 	CEdit m_editCtrlWeight;
 	CEdit m_editCtrlHThresh;
 	CButton m_checkOffOn;
-	CMFCButton m_MfcButtonPauseOn;
-	CMFCButton m_MfcButtonPauseOff;
 	afx_msg void OnEnUpdateEditHthresh();
 	afx_msg void OnEnUpdateEditScale();
 	afx_msg void OnEnUpdateEditWeights();
 	afx_msg void OnBnClickedCheckOffOn();
 	CStatic m_staticPic;
-	afx_msg void OnBnClickedMfcbuttonPauseon();
-	afx_msg void OnBnClickedMfcbuttonPauseoff();
+	afx_msg void OnBnClickedButtonPauseon();
+	afx_msg void OnBnClickedButtonPauseoff();
+	afx_msg void OnBnClickedCheckGrouping();
+	CButton m_checkGrouping;
+	CButton m_buttonPauseOn;
+	CButton m_buttonPauseOff;
 };
 
 #ifndef _DEBUG  // debuguj wersję w elemencie CameraTrackerView.cpp

@@ -27,6 +27,8 @@ public:
 public:
 	void SetImgSize(LONG width, LONG height);
 	void SetAnalyzerOnOff(bool status);
+	void SetPause(bool status);
+	void SetAnalyzerGrouping(bool status);
 // Przesłania
 public:
 	virtual BOOL OnNewDocument();

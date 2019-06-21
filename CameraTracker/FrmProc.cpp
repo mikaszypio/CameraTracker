@@ -40,13 +40,24 @@ void FrmProc::Run()
 {
 	cv::Mat capturedFrm;
 	SetVideoCapture();
-	while (isRunning && videoCapture.read(capturedFrm))
+	while (isRunning)
 	{
-		frame = ResizeFrm(capturedFrm, 640, 480);
-		if (detectionStatus)
-			frame = analyzer.DetectSilhouettes(frame, scale, weight, hitThresh, winStride, padding);
-		if (pictureBox != NULL && bitmapSizeSet) DisplayImage();
-		cv::waitKey(15);
+		try
+		{
+			if (!isPaused)
+			{
+				videoCapture >> capturedFrm;
+				frame = ResizeFrm(capturedFrm, 640, 480);
+				if (detectionStatus)
+					frame = analyzer.DetectSilhouettes(frame, scale, weight, hitThresh, winStride, padding, grouping);
+				if (pictureBox != NULL && bitmapSizeSet) DisplayImage();
+				cv::waitKey(15);
+			}
+		}
+		catch (cv::Exception e)
+		{
+
+		}
 	}
 	videoCapture.release();
 }
@@ -79,8 +90,10 @@ void FrmProc::SetAttributes(double scale, double weight, double hitThresh, int w
 	this->scale = scale;
 	this->weight = weight;
 	this->hitThresh = hitThresh;
-	this->winStride = cv::Size(winStride, winStride);
-	this->padding = cv::Size(padding, padding);
+	if (winStride != 0) this->winStride = cv::Size(winStride, winStride);
+	else this->winStride = cv::Size();
+	if (padding != 0) this->padding = cv::Size(padding, padding);
+	else this->padding = cv::Size();
 }
 
 void FrmProc::ReleaseImage(CImage* cimg)

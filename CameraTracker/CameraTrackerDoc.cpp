@@ -122,3 +122,13 @@ void CCameraTrackerDoc::SetAnalyzerOnOff(bool status)
 {
 	frmProc->detectionStatus = status;
 }
+
+void CCameraTrackerDoc::SetPause(bool status)
+{
+	frmProc->isPaused = status;
+}
+
+void CCameraTrackerDoc::SetAnalyzerGrouping(bool status)
+{
+	frmProc->grouping = status;
+}

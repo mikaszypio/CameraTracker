@@ -23,6 +23,6 @@ protected:
 public:
 	FrmAnalyzer();
 	cv::Mat DetectSilhouettes(cv::Mat frm, double scale = 1.05, double weight = -1, double hitThresh = 0,
-		cv::Size winStride = cv::Size(), cv::Size padding = cv::Size());
+		cv::Size winStride = cv::Size(), cv::Size padding = cv::Size(), bool grouping = false);
 };
 

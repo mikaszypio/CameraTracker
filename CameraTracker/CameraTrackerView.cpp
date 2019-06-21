@@ -30,8 +30,9 @@ BEGIN_MESSAGE_MAP(CCameraTrackerView, CFormView)
 	ON_EN_UPDATE(IDC_EDIT_SCALE, &CCameraTrackerView::OnEnUpdateEditScale)
 	ON_EN_UPDATE(IDC_EDIT_WEIGHTS, &CCameraTrackerView::OnEnUpdateEditWeights)
 	ON_BN_CLICKED(IDC_CHECK_OFFON, &CCameraTrackerView::OnBnClickedCheckOffOn)
-	ON_BN_CLICKED(IDC_MFCBUTTON_PAUSEON, &CCameraTrackerView::OnBnClickedMfcbuttonPauseon)
-	ON_BN_CLICKED(IDC_MFCBUTTON_PAUSEOFF, &CCameraTrackerView::OnBnClickedMfcbuttonPauseoff)
+	ON_BN_CLICKED(IDC_BUTTON_PAUSEON, &CCameraTrackerView::OnBnClickedButtonPauseon)
+	ON_BN_CLICKED(IDC_BUTTON_PAUSEOFF, &CCameraTrackerView::OnBnClickedButtonPauseoff)
+	ON_BN_CLICKED(IDC_CHECK_GROUPING, &CCameraTrackerView::OnBnClickedCheckGrouping)
 END_MESSAGE_MAP()
 
 // Tworzenie/niszczenie obiektu CCameraTrackerView
@@ -62,9 +63,10 @@ void CCameraTrackerView::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT_WEIGHTS, m_editCtrlWeight);
 	DDX_Control(pDX, IDC_EDIT_HTHRESH, m_editCtrlHThresh);
 	DDX_Control(pDX, IDC_CHECK_OFFON, m_checkOffOn);
-	DDX_Control(pDX, IDC_MFCBUTTON_PAUSEON, m_MfcButtonPauseOn);
-	DDX_Control(pDX, IDC_MFCBUTTON_PAUSEOFF, m_MfcButtonPauseOff);
 	DDX_Control(pDX, IDC_STATIC_PIC, m_staticPic);
+	DDX_Control(pDX, IDC_CHECK_GROUPING, m_checkGrouping);
+	DDX_Control(pDX, IDC_BUTTON_PAUSEON, m_buttonPauseOn);
+	DDX_Control(pDX, IDC_BUTTON_PAUSEOFF, m_buttonPauseOff);
 }
 
 BOOL CCameraTrackerView::PreCreateWindow(CREATESTRUCT& cs)
@@ -98,6 +100,8 @@ void CCameraTrackerView::OnInitialUpdate()
 	SetCEdit(m_editCtrlScale, m_sliderCtrlScale);
 	SetCEdit(m_editCtrlWeight, m_sliderCtrlWeight);
 	SetCEdit(m_editCtrlHThresh, m_sliderCtrlHThresh);
+
+	m_buttonPauseOff.EnableWindow(FALSE);
 }
 
 void CCameraTrackerView::OnDraw(CDC* pDC)
@@ -254,15 +258,24 @@ void CCameraTrackerView::OnBnClickedCheckOffOn()
 }
 
 
-void CCameraTrackerView::OnBnClickedMfcbuttonPauseon()
+void CCameraTrackerView::OnBnClickedButtonPauseon()
 {
-	m_MfcButtonPauseOn.EnableWindow(FALSE);
-	m_MfcButtonPauseOff.EnableWindow();
+	m_buttonPauseOn.EnableWindow(FALSE);
+	m_buttonPauseOff.EnableWindow();
+	GetDocument()->SetPause(true);
 }
 
 
-void CCameraTrackerView::OnBnClickedMfcbuttonPauseoff()
+void CCameraTrackerView::OnBnClickedButtonPauseoff()
 {
-	m_MfcButtonPauseOff.EnableWindow(FALSE);
-	m_MfcButtonPauseOn.EnableWindow();
+	m_buttonPauseOff.EnableWindow(FALSE);
+	m_buttonPauseOn.EnableWindow();
+	GetDocument()->SetPause(false);
+}
+
+
+void CCameraTrackerView::OnBnClickedCheckGrouping()
+{
+	CCameraTrackerDoc* pDoc = GetDocument();
+	pDoc->SetAnalyzerGrouping(m_checkGrouping.GetState());
 }

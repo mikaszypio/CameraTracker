@@ -25,13 +25,13 @@ Pedestrian FrmAnalyzer::DrawVector(cv::Mat frm, Pedestrian prevPed, Pedestrian p
 }
 
 cv::Mat FrmAnalyzer::DetectSilhouettes(cv::Mat frm, double scale, double weight, double hitThresh,
-	cv::Size winStride, cv::Size padding)
+	cv::Size winStride, cv::Size padding, bool grouping)
 {
 	std::vector<cv::Rect> bodies;
 	std::vector<double> weights;
 	std::vector<Pedestrian> pedestrians = std::vector<Pedestrian>();
 	if (!lastSilhouettes.empty()) pedestrians = TrackSilhouettes(frm);
-	hogDescriptor.detectMultiScale(frm, bodies, weights, 0.0, cv::Size(), cv::Size(), 1.05, 2.0);
+	hogDescriptor.detectMultiScale(frm, bodies, weights, hitThresh, winStride, padding, scale, 2.0, grouping);
 	pedestrians = UpdateSilhouettes(bodies, pedestrians);
 	std::vector<Pedestrian> silhouettes = MarkSilhouettes(frm, pedestrians);
 	lastSilhouettes = pedestrians;
