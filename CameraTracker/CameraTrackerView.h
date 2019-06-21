@@ -73,6 +73,7 @@ public:
 	afx_msg void OnEnUpdateEditScale();
 	afx_msg void OnEnUpdateEditWeights();
 	afx_msg void OnBnClickedCheckOffOn();
+	CStatic m_staticPic;
 };
 
 #ifndef _DEBUG  // debuguj wersję w elemencie CameraTrackerView.cpp

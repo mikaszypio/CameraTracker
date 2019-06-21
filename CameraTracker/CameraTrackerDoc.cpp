@@ -106,3 +106,14 @@ void CCameraTrackerDoc::SetAnalyzerAttr(double scale, double weight, double hitT
 {
 	frmProc->SetAttributes(scale, weight, hitThresh, winStride, padding);
 }
+
+void CCameraTrackerDoc::SetImgSize(LONG width, LONG height)
+{
+	imgSize = cv::Size(width, height);
+	frmProc->SetBitmapSize(imgSize);
+}
+
+void CCameraTrackerDoc::SetProcPictureCtrl(CStatic* cstatic)
+{
+	frmProc->SetPictureBox(cstatic);
+}

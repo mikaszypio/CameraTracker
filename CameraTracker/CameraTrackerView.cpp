@@ -8,6 +8,7 @@
 #include "CameraTrackerDoc.h"
 #include "CameraTrackerView.h"
 #include <opencv2/highgui/highgui_c.h>
+#include <cctype>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -28,7 +29,7 @@ BEGIN_MESSAGE_MAP(CCameraTrackerView, CFormView)
 	ON_EN_UPDATE(IDC_EDIT_HTHRESH, &CCameraTrackerView::OnEnUpdateEditHthresh)
 	ON_EN_UPDATE(IDC_EDIT_SCALE, &CCameraTrackerView::OnEnUpdateEditScale)
 	ON_EN_UPDATE(IDC_EDIT_WEIGHTS, &CCameraTrackerView::OnEnUpdateEditWeights)
-	ON_BN_CLICKED(IDC_CHECK_OFFON, &CCameraTrackerView::OnBnClickedCheckOffOn)
+	/*ON_BN_CLICKED(IDC_CHECK_OFFON, &CCameraTrackerView::OnBnClickedCheckOffOn)*/
 END_MESSAGE_MAP()
 
 // Tworzenie/niszczenie obiektu CCameraTrackerView
@@ -61,6 +62,7 @@ void CCameraTrackerView::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CHECK_OFFON, m_checkOffOn);
 	DDX_Control(pDX, IDC_MFCBUTTON_PAUSEON, m_MfcButtonPauseOn);
 	DDX_Control(pDX, IDC_MFCBUTTON_PAUSEOFF, m_MfcButtonPauseOff);
+	DDX_Control(pDX, IDC_STATIC_PIC, m_staticPic);
 }
 
 BOOL CCameraTrackerView::PreCreateWindow(CREATESTRUCT& cs)
@@ -103,18 +105,11 @@ void CCameraTrackerView::OnDraw(CDC* pDC)
 	if (!pDoc)
 		return;
 
-	CRect rect;
-	CWnd* dlgItem = GetDlgItem(IDC_STATIC_PIC);
-	dlgItem->GetWindowRect(rect);
-
-	cv::destroyAllWindows();
-	cvNamedWindow("IDC_STATIC_OUTPUT");
-	cvResizeWindow("IDC_STATIC_OUTPUT", rect.Width(), rect.Height());
-	HWND hWnd = (HWND)cvGetWindowHandle("IDC_STATIC_OUTPUT");
-	HWND hParent = ::GetParent(hWnd);
-	::SetParent(hWnd, GetDlgItem(IDC_STATIC_PIC)->m_hWnd);
-	::ShowWindow(hParent, SW_HIDE);
-
+	// Na czysto:
+	RECT rect;
+	m_staticPic.GetClientRect(&rect);
+	pDoc->SetProcPictureCtrl(&m_staticPic);
+	pDoc->SetImgSize(rect.right, rect.bottom);
 }
 
 // Diagnostyka klasy CCameraTrackerView
@@ -249,7 +244,6 @@ bool CCameraTrackerView::ValidateCEditInput(CString cstr)
 	if (cstr.IsEmpty()) return false;
 	return cstr.SpanIncluding(_T(CAMTRACKVIEW_FCHARS)) == cstr;
 }
-
 
 void CCameraTrackerView::OnBnClickedCheckOffOn()
 {

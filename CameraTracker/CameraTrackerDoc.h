@@ -13,16 +13,19 @@ protected: // utwórz tylko na podstawie serializacji
 	DECLARE_DYNCREATE(CCameraTrackerDoc)
 	void StartFrmProc(LPCTSTR lpszPathName);
 	void StopFrmProc();
-	FrmProc* frmProc = nullptr;
 	double scale;
 	double lThresh;
 	double uThresh;
+	cv::Size imgSize;
+	cv::Mat m_cvImage;
+	FrmProc* frmProc = nullptr;
 // Atrybuty
 public:
 	void SetAnalyzerAttr(double scale, double weight, double hitThresh, int winStride, int padding);
+	void SetProcPictureCtrl(CStatic* cstatic);
 // Operacje
 public:
-	
+	void SetImgSize(LONG width, LONG height);
 // Przesłania
 public:
 	virtual BOOL OnNewDocument();

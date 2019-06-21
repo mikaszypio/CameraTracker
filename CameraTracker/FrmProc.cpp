@@ -7,6 +7,9 @@ FrmProc::FrmProc()
 	isRunning = false;
 	analyzer = FrmAnalyzer();
 	scale = 1.05;
+	cImage = new CImage();
+	bitmapSizeSet = false;
+	pictureBox = NULL;
 }
 
 FrmProc* FrmProc::s_instance = NULL;
@@ -39,10 +42,10 @@ void FrmProc::Run()
 	SetVideoCapture();
 	while (isRunning && videoCapture.read(capturedFrm))
 	{
-		cv::Mat frm = ResizeFrm(capturedFrm, 640, 480);
-		frm = analyzer.DetectSilhouettes(frm, scale, weight, hitThresh, winStride, padding);
-		cv::resize(frm, frm, cv::Size(640, 480), 0, 0, cv::INTER_LINEAR);
-		cv::imshow("IDC_STATIC_OUTPUT", frm);
+		frame = ResizeFrm(capturedFrm, 640, 480);
+		frame = analyzer.DetectSilhouettes(frame, scale, weight, hitThresh, winStride, padding);
+		ResizeFrm(frame, bitmapSize.width, bitmapSize.height);
+		if (pictureBox != NULL && bitmapSizeSet) DisplayImage();
 		cv::waitKey(15);
 	}
 	videoCapture.release();
@@ -78,4 +81,91 @@ void FrmProc::SetAttributes(double scale, double weight, double hitThresh, int w
 	this->hitThresh = hitThresh;
 	this->winStride = cv::Size(winStride, winStride);
 	this->padding = cv::Size(padding, padding);
+}
+
+void FrmProc::ReleaseImage(CImage* cimg)
+{
+	if (cimg)
+	{
+		cimg->ReleaseDC();
+		delete cimg;
+		cimg = NULL;
+	}
+}
+
+void FrmProc::DisplayImage()
+{
+	HBITMAP bitImage = (HBITMAP)CreateHBitmap(frame);
+	cImage->Attach(bitImage);
+	cImage->BitBlt(GetDC(pictureBox->m_hWnd), 0, 0);
+	cImage->Detach();
+}
+
+BITMAPINFO FrmProc::CreateBitmapInfo(cv::Mat frm)
+{
+	BITMAPINFOHEADER header = CreateBitmapHeader(frm);
+	return CreateBitmapInfo(header);
+}
+
+BITMAPINFO FrmProc::CreateBitmapInfo(BITMAPINFOHEADER header)
+{
+	BITMAPINFO info = BITMAPINFO{};
+	ZeroMemory(&info, sizeof(info));
+	info.bmiHeader = header;
+	info.bmiColors->rgbBlue = 0;
+	info.bmiColors->rgbGreen = 0;
+	info.bmiColors->rgbRed = 0;
+	info.bmiColors->rgbReserved = 0;
+	return info;
+}
+
+
+BITMAPINFOHEADER FrmProc::CreateBitmapHeader(cv::Mat frm)
+{
+	BITMAPINFOHEADER header = BITMAPINFOHEADER{};
+	ZeroMemory(&header, sizeof(header));
+	header.biSize = sizeof(header);
+	header.biWidth = bitmapSize.width;
+	header.biHeight = -(bitmapSize.height);
+	header.biPlanes = 1;
+	header.biBitCount = frm.channels() * 8;
+	return header;
+}
+
+unsigned int FrmProc::GetCvDepthVal(int depth)
+{
+	unsigned int value;
+	switch (depth)
+	{
+	case CV_8U:
+	case CV_8S: value = 8u; break;
+	case CV_16U:
+	case CV_16S: value = 16u; break;
+	case CV_32S:
+	case CV_32F: value = 32u; break;
+	case CV_64F: value = 64u; break;
+	default: break;
+	}
+	return value;
+}
+
+HBITMAP FrmProc::CreateHBitmap(cv::Mat frm)
+{
+	BITMAPINFOHEADER bitmapHeader = (BITMAPINFOHEADER)CreateBitmapHeader(frm);
+	BITMAPINFO bitmapInfo = (BITMAPINFO)CreateBitmapInfo(bitmapHeader);
+	HDC hDc = GetDC(nullptr);
+	HBITMAP hBitmap = CreateDIBitmap(hDc, &bitmapHeader, CBM_INIT, frm.data, &bitmapInfo, DIB_RGB_COLORS);
+	DeleteDC(hDc);
+	return hBitmap;
+}
+
+void FrmProc::SetBitmapSize(cv::Size size)
+{
+	bitmapSize = size;
+	bitmapSizeSet = true;
+}
+
+void FrmProc::SetPictureBox(CStatic* cstatic)
+{
+	pictureBox = cstatic;
 }
