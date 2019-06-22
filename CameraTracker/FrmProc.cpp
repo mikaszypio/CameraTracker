@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "FrmProc.h"
+#include <codecvt>
+#include <locale>
 #include <opencv2/imgproc/imgproc.hpp>
 
 FrmProc::FrmProc()
@@ -9,13 +11,13 @@ FrmProc::FrmProc()
 	scale = 1.05;
 	cImage = new CImage();
 	bitmapSizeSet = false;
-	pictureBox = NULL;
+	pictureBox = nullptr;
 }
 
-FrmProc* FrmProc::s_instance = NULL;
+FrmProc* FrmProc::s_instance = nullptr;
 FrmProc* FrmProc::GetInstance()
 {
-	if (s_instance == NULL)
+	if (s_instance == nullptr)
 		s_instance = new FrmProc();
 
 	return s_instance;
@@ -56,7 +58,7 @@ void FrmProc::Run()
 				frame = ResizeFrm(capturedFrm, 640, 480);
 				if (detectionStatus)
 					frame = analyzer.DetectSilhouettes(frame, scale, weight, hitThresh, winStride, padding, grouping);
-				if (pictureBox != NULL && bitmapSizeSet) DisplayImage();
+				if (pictureBox != nullptr && bitmapSizeSet) DisplayImage();
 				cv::waitKey(15);
 			}
 		}
@@ -108,7 +110,7 @@ void FrmProc::ReleaseImage(CImage* cimg)
 	{
 		cimg->ReleaseDC();
 		delete cimg;
-		cimg = NULL;
+		cimg = nullptr;
 	}
 }
 
@@ -193,4 +195,43 @@ void FrmProc::SetPictureBox(CStatic* cstatic)
 void FrmProc::SetAsMarked(cv::Point point)
 {
 	analyzer.MarkSilhouette(point);
+}
+
+void FrmProc::StartRecording()
+{
+	std::string homepath = GetHomePath();
+	std::string title = GetTitle();
+	std::string extension = ".avi";
+	std::stringstream stream;
+	stream << homepath << title << extension;
+	std::string pathname = stream.str();
+	if (videoWriter.isOpened()) StopRecording();
+	videoWriter.open(pathname, cv::VideoWriter::fourcc('M', 'P', 'E', 'G'), 20, bitmapSize, true);
+}
+
+void FrmProc::StopRecording()
+{
+	if (videoWriter.isOpened())
+	{
+		videoWriter.release();
+	}
+}
+
+std::string FrmProc::GetTitle()
+{
+	std::stringstream stream;
+	SYSTEMTIME time;
+	GetLocalTime(&time);
+	stream << "\\" << time.wDay << "-" << time.wMonth << "-" << time.wYear <<
+		"_Time_=_" << time.wHour << "-" << time.wMinute << "-" << time.wSecond;
+	return stream.str();
+}
+
+std::string FrmProc::GetHomePath()
+{
+	wchar_t* home;
+	SHGetKnownFolderPath(FOLDERID_Documents, KF_FLAG_DEFAULT, nullptr, &home);
+	std::wstringstream wstream(home);
+	CoTaskMemFree(static_cast<void*>(home));
+	return CW2A(wstream.str().c_str());
 }

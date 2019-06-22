@@ -50,13 +50,20 @@
 #define IDC_BUTTON1                     1029
 #define IDC_BUTTON_PAUSEOFF             1029
 #define IDC_BUTTON_PAUSEON              1030
+#define ID_PLIK_ROZPOCZNIJZAPIS         32771
+#define ID_PLIK_ZAKO32772               32772
+#define ID_PLIK_FINSAVE                 32773
+#define ID_PLIK_SAVE_BEGIN              32774
+#define ID_PLIK_SAVE_FIN                32775
+#define ID_FILE_SAVE_BEGIN              32776
+#define ID_FILE_SAVE_FIN                32777
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        311
-#define _APS_NEXT_COMMAND_VALUE         32771
+#define _APS_NEXT_COMMAND_VALUE         32778
 #define _APS_NEXT_CONTROL_VALUE         1031
 #define _APS_NEXT_SYMED_VALUE           310
 #endif

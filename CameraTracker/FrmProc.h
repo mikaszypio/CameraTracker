@@ -9,6 +9,7 @@ protected:
 	static FrmProc* s_instance;
 	CStatic* pictureBox;
 	cv::VideoCapture videoCapture;
+	cv::VideoWriter videoWriter;
 	FrmAnalyzer analyzer;
 	bool isRunning;
 	std::string pathName;
@@ -23,11 +24,13 @@ protected:
 	BITMAPINFO CreateBitmapInfo(BITMAPINFOHEADER header);
 	BITMAPINFOHEADER CreateBitmapHeader(cv::Mat frm);
 	unsigned int GetCvDepthVal(int depth);
+	std::string GetTitle();
 	cv::Mat ResizeFrm(cv::Mat frm, int minWidth, int minHeight);
 	void ReleaseImage(CImage* cimg);
 	void Run();
 	void SetVideoCapture();
 	void clear();
+	std::string GetHomePath();
 public:
 	double scale;
 	double weight;
@@ -48,4 +51,6 @@ public:
 	void SetPathName(LPCTSTR lpszPathName);
 	void SetAttributes(double scale, double weight, double hitThresh, int winStride, int padding);
 	void SetAsMarked(cv::Point point);
+	void StartRecording();
+	void StopRecording();
 };

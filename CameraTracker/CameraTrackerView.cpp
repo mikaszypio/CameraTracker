@@ -34,6 +34,8 @@ BEGIN_MESSAGE_MAP(CCameraTrackerView, CFormView)
 	ON_BN_CLICKED(IDC_BUTTON_PAUSEOFF, &CCameraTrackerView::OnBnClickedButtonPauseoff)
 	ON_BN_CLICKED(IDC_CHECK_GROUPING, &CCameraTrackerView::OnBnClickedCheckGrouping)
 	ON_STN_CLICKED(IDC_STATIC_PIC, &CCameraTrackerView::OnStnClickedStaticPic)
+	ON_COMMAND(ID_FILE_SAVE_BEGIN, &CCameraTrackerView::OnFileSaveBegin)
+	ON_COMMAND(ID_FILE_SAVE_FIN, &CCameraTrackerView::OnFileSaveFin)
 END_MESSAGE_MAP()
 
 // Tworzenie/niszczenie obiektu CCameraTrackerView
@@ -291,4 +293,16 @@ void CCameraTrackerView::OnStnClickedStaticPic()
 	unsigned int x = position.x - rect.left;
 	unsigned int y = position.y - rect.top;
 	GetDocument()->SetAsMarked(x, y);
+}
+
+
+void CCameraTrackerView::OnFileSaveBegin()
+{
+	GetDocument()->frmProc->StartRecording();
+}
+
+
+void CCameraTrackerView::OnFileSaveFin()
+{
+	GetDocument()->frmProc->StopRecording();
 }
