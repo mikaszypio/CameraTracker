@@ -39,7 +39,7 @@ public:
 	cv::Size padding;
 	std::thread thread;
 	bool grouping;
-	bool detectionStatus;
+	bool detectionStatus = true;
 	bool isPaused;
 
 	void DisplayImage();

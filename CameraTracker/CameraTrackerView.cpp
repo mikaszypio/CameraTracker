@@ -105,6 +105,7 @@ void CCameraTrackerView::OnInitialUpdate()
 	SetCEdit(m_editCtrlHThresh, m_sliderCtrlHThresh);
 
 	m_buttonPauseOff.EnableWindow(FALSE);
+	m_checkOffOn.SetCheck(TRUE);
 }
 
 void CCameraTrackerView::OnDraw(CDC* pDC)
