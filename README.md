@@ -1,2 +1,2 @@
 # CameraTracker
-Pedestrian silhouettes tracking app utilizing OpenCV and MS MFC.
+Pedestrian silhouettes tracking app utilizing OpenCV (4.10) and MS MFC.
