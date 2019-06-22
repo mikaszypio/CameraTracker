@@ -78,6 +78,7 @@ public:
 	CButton m_checkGrouping;
 	CButton m_buttonPauseOn;
 	CButton m_buttonPauseOff;
+	afx_msg void OnStnClickedStaticPic();
 };
 
 #ifndef _DEBUG  // debuguj wersję w elemencie CameraTrackerView.cpp

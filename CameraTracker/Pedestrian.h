@@ -20,5 +20,8 @@ public:
 	cv::Point GetTopLeft();
 	cv::Point GetBottomRight();
 	bool Equals(cv::Point p);
+	bool GotBiggerRect(cv::Rect rect);
+	bool verified;
+	cv::Scalar color;
 };
 

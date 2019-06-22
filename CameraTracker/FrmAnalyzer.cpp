@@ -4,10 +4,12 @@
 
 cv::Scalar FrmAnalyzer::colorBlue = cv::Scalar(255, 0, 0);
 cv::Scalar FrmAnalyzer::colorRed = cv::Scalar(0, 0, 192);
+cv::Scalar FrmAnalyzer::colorGreen = cv::Scalar(0, 192, 0);
 FrmAnalyzer::FrmAnalyzer()
 {
 	hogDescriptor.setSVMDetector(cv::HOGDescriptor::getDefaultPeopleDetector());
 	lastSilhouettes = std::vector<Pedestrian>();
+	pedestrians = std::vector<Pedestrian>();
 }
 
 Pedestrian FrmAnalyzer::DrawVector(cv::Mat frm, Pedestrian prevPed, Pedestrian ped)
@@ -29,11 +31,12 @@ cv::Mat FrmAnalyzer::DetectSilhouettes(cv::Mat frm, double scale, double weight,
 {
 	std::vector<cv::Rect> bodies;
 	std::vector<double> weights;
-	std::vector<Pedestrian> pedestrians = std::vector<Pedestrian>();
+	pedestrians.clear();
 	if (!lastSilhouettes.empty()) pedestrians = TrackSilhouettes(frm);
 	hogDescriptor.detectMultiScale(frm, bodies, weights, hitThresh, winStride, padding, scale, 2.0, grouping);
 	pedestrians = UpdateSilhouettes(bodies, pedestrians);
-	std::vector<Pedestrian> silhouettes = MarkSilhouettes(frm, pedestrians);
+	pedestrians = RemoveDuplicates(pedestrians);
+	pedestrians = MarkSilhouettes(frm, pedestrians);
 	lastSilhouettes = pedestrians;
 	features.clear();
 	for (int i = 0; i < pedestrians.size(); i++)
@@ -45,7 +48,7 @@ cv::Mat FrmAnalyzer::DetectSilhouettes(cv::Mat frm, double scale, double weight,
 cv::Point FrmAnalyzer::GetCentralPoint(cv::Rect rect)
 {
 	int x = rect.x + ((rect.width) / 2);
-	int y = rect.y + ((rect.height) / 2);
+	int y = rect.y + ((rect.height) / 2) - 15;
 	return cv::Point(x, y);
 }
 
@@ -62,7 +65,7 @@ std::vector<Pedestrian> FrmAnalyzer::MarkSilhouettes(cv::Mat frm, std::vector<Pe
 	{
 		cv::Point topLeft = silhouettes[i].GetTopLeft();
 		cv::Point bottomRight = silhouettes[i].GetBottomRight();
-		cv::rectangle(frm, topLeft, bottomRight, colorBlue, 3);
+		cv::rectangle(frm, topLeft, bottomRight, silhouettes[i].color, 3);
 		if (!lastSilhouettes.empty())
 		{
 			for (int j = (int)lastSilhouettes.size() - 1; j > -1; j--)
@@ -74,6 +77,7 @@ std::vector<Pedestrian> FrmAnalyzer::MarkSilhouettes(cv::Mat frm, std::vector<Pe
 				if (x < 10 && y < 10)
 				{
 					Pedestrian ped = DrawVector(frm, lastSilhouettes[j], silhouettes[i]);
+					silhouettes[i] = ped;
 					lastSilhouettes.erase(lastSilhouettes.begin() + j);
 					break;
 				}
@@ -101,6 +105,7 @@ std::vector<Pedestrian> FrmAnalyzer::UpdateSilhouettes(std::vector<cv::Rect> bod
 			Pedestrian pedestrian = Pedestrian(bodies[i]);
 			pedestrian.AddToDirections(point);
 			pedestrian.feature = point;
+			pedestrian.color = colorBlue;
 			pedestrians.push_back(pedestrian);
 		}
 	}
@@ -122,8 +127,7 @@ std::vector<Pedestrian> FrmAnalyzer::TrackSilhouettes(cv::Mat frm)
 		cv::calcOpticalFlowPyrLK(oldGray, gray, features, newFeatures, status, err);
 		for (int i = 0; i < status.size(); i++)
 		{
-			//int index = IsDuplicate(newFeatures[i], lastSilhouettes);
-			int index = FindPedestrian(newFeatures[i], lastSilhouettes);
+			int index = FindPedestrian(features[i], lastSilhouettes);
 			if (index != -1 && !lastSilhouettes[index].Equals(newFeatures[i]))
 			{
 				lastSilhouettes[index].feature = newFeatures[i];
@@ -139,7 +143,7 @@ int FrmAnalyzer::FindPedestrian(cv::Point2f feature, std::vector<Pedestrian> ped
 {
 	for (int i = (int)pedestrians.size()-1; i > -1; i--)
 	{
-		if (pedestrians[i].InRange(feature, 10))
+		if (pedestrians[i].feature == feature)
 		{
 			return i;
 		}
@@ -152,10 +156,57 @@ int FrmAnalyzer::IsDuplicate(Pedestrian ped, std::vector<Pedestrian> pedestrians
 {
 	for (int i = 0; i < pedestrians.size(); i++)
 	{
-		if (pedestrians[i].InRange(ped.feature) || ped.InRange(pedestrians[i].feature))
+		if (pedestrians[i].InRange(ped.feature))
 		{
 			return i;
 		}
 	}
 	return -1;
+}
+
+void FrmAnalyzer::clear()
+{
+	lastSilhouettes.clear();
+	features.clear();
+	oldGray = NULL;
+}
+
+std::vector<Pedestrian> FrmAnalyzer::RemoveDuplicates(std::vector<Pedestrian> pedestrians)
+{
+	for (int i = (int)pedestrians.size() - 1; i > 1; i--)
+	{
+		bool erase = false;
+		for (int j = i - 1; j >= 0; j--)
+		{
+			bool x = abs(pedestrians[i].feature.x - pedestrians[j].feature.x);
+			bool y = abs(pedestrians[j].feature.y - pedestrians[j].feature.y);
+			if (!pedestrians[i].verified || (x < 10 && y < 10))
+			if (pedestrians[i].InRange(pedestrians[j].feature) || pedestrians[j].InRange(pedestrians[i].feature))
+			{
+				if (pedestrians[i].GotBiggerRect(pedestrians[j].GetRect()))
+				{
+					pedestrians[j] = pedestrians[i];
+				}
+				erase = true;
+				break;
+			}
+		}
+		if (erase) pedestrians.erase(pedestrians.begin() + i);
+		else pedestrians[i].verified = true;
+	}
+	return pedestrians;
+}
+
+void FrmAnalyzer::MarkSilhouette(cv::Point point)
+{
+	for (int i = 0; i < lastSilhouettes.size(); i++)
+	{
+		if (lastSilhouettes[i].InRange(point)) lastSilhouettes[i].color = colorGreen;
+		else lastSilhouettes[i].color = colorBlue;
+	}
+	for (int i = 0; i < pedestrians.size(); i++)
+	{
+		if (pedestrians[i].InRange(point)) pedestrians[i].color = colorGreen;
+		else pedestrians[i].color = colorBlue;
+	}
 }

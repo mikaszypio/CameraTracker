@@ -27,6 +27,7 @@ protected:
 	void ReleaseImage(CImage* cimg);
 	void Run();
 	void SetVideoCapture();
+	void clear();
 public:
 	double scale;
 	double weight;
@@ -46,4 +47,5 @@ public:
 	void SetPictureBox(CStatic* cstatic);
 	void SetPathName(LPCTSTR lpszPathName);
 	void SetAttributes(double scale, double weight, double hitThresh, int winStride, int padding);
+	void SetAsMarked(cv::Point point);
 };

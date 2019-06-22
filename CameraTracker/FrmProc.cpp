@@ -33,7 +33,13 @@ void FrmProc::StopThread(FrmProc* frmProc)
 	{
 		frmProc->isRunning = false;
 		frmProc->thread.join();
+		frmProc->clear();
 	}
+}
+
+void FrmProc::clear()
+{
+	analyzer.clear();
 }
 
 void FrmProc::Run()
@@ -148,7 +154,7 @@ BITMAPINFOHEADER FrmProc::CreateBitmapHeader(cv::Mat frm)
 
 unsigned int FrmProc::GetCvDepthVal(int depth)
 {
-	unsigned int value;
+	unsigned int value = 0u;
 	switch (depth)
 	{
 	case CV_8U:
@@ -182,4 +188,9 @@ void FrmProc::SetBitmapSize(cv::Size size)
 void FrmProc::SetPictureBox(CStatic* cstatic)
 {
 	pictureBox = cstatic;
+}
+
+void FrmProc::SetAsMarked(cv::Point point)
+{
+	analyzer.MarkSilhouette(point);
 }

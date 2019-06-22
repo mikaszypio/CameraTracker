@@ -33,6 +33,7 @@ BEGIN_MESSAGE_MAP(CCameraTrackerView, CFormView)
 	ON_BN_CLICKED(IDC_BUTTON_PAUSEON, &CCameraTrackerView::OnBnClickedButtonPauseon)
 	ON_BN_CLICKED(IDC_BUTTON_PAUSEOFF, &CCameraTrackerView::OnBnClickedButtonPauseoff)
 	ON_BN_CLICKED(IDC_CHECK_GROUPING, &CCameraTrackerView::OnBnClickedCheckGrouping)
+	ON_STN_CLICKED(IDC_STATIC_PIC, &CCameraTrackerView::OnStnClickedStaticPic)
 END_MESSAGE_MAP()
 
 // Tworzenie/niszczenie obiektu CCameraTrackerView
@@ -89,7 +90,7 @@ void CCameraTrackerView::OnInitialUpdate()
 	m_sliderCtrlWinStride.SetRange(0, 16, TRUE);
 	m_sliderCtrlPadding.SetRange(0, 16, TRUE);
 
-	m_sliderCtrlScale.SetPos((int)CAMTRACKVIEW_DIVIDER * 1.05);
+	m_sliderCtrlScale.SetPos(CAMTRACKVIEW_DIVIDER * (int)1.05);
 	m_sliderCtrlWeight.SetPos(0);
 	m_sliderCtrlHThresh.SetPos(0);
 
@@ -254,7 +255,7 @@ bool CCameraTrackerView::ValidateCEditInput(CString cstr)
 void CCameraTrackerView::OnBnClickedCheckOffOn()
 {
 	CCameraTrackerDoc* pDoc = GetDocument();
-	pDoc->SetAnalyzerOnOff(m_checkOffOn.GetState());
+	pDoc->SetAnalyzerOnOff(m_checkOffOn.GetCheck());
 }
 
 
@@ -277,5 +278,17 @@ void CCameraTrackerView::OnBnClickedButtonPauseoff()
 void CCameraTrackerView::OnBnClickedCheckGrouping()
 {
 	CCameraTrackerDoc* pDoc = GetDocument();
-	pDoc->SetAnalyzerGrouping(m_checkGrouping.GetState());
+	pDoc->SetAnalyzerGrouping(m_checkGrouping.GetCheck());
+}
+
+
+void CCameraTrackerView::OnStnClickedStaticPic()
+{
+	POINT position;
+	GetCursorPos(&position);
+	RECT rect;
+	m_staticPic.GetWindowRect(&rect);
+	unsigned int x = position.x - rect.left;
+	unsigned int y = position.y - rect.top;
+	GetDocument()->SetAsMarked(x, y);
 }

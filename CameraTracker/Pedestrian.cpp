@@ -6,6 +6,7 @@ Pedestrian::Pedestrian(cv::Rect rect)
 	directions = std::vector<cv::Point>();
 	this->rect = rect;
 	feature = cv::Point(-1, -1);
+	verified = false;
 }
 
 Pedestrian::Pedestrian(cv::Rect rect, std::vector<cv::Point> directions)
@@ -13,6 +14,7 @@ Pedestrian::Pedestrian(cv::Rect rect, std::vector<cv::Point> directions)
 	this->rect = rect;
 	this->directions = directions;
 	feature = directions.back();
+	verified = false;
 }
 
 cv::Rect Pedestrian::GetRect()
@@ -28,8 +30,8 @@ void Pedestrian::SetRect(cv::Rect rect)
 cv::Point Pedestrian::GetVector(cv::Point p0)
 {
 	cv::Point pavg = AveragePoint();
-	int x = (pavg.x - p0.x) * 2;
-	int y = (pavg.y - p0.y) * 2;
+	int x = (pavg.x - p0.x) * 5;
+	int y = (pavg.y - p0.y) * 5;
 	return cv::Point(p0.x - x, p0.y - y);
 }
 
@@ -77,18 +79,25 @@ bool Pedestrian::InRange(cv::Point2f feature)
 cv::Point Pedestrian::GetTopLeft()
 {
 	float x = feature.x - rect.width / 2;
-	float y = feature.y - rect.height / 2;
+	float y = feature.y - rect.height / 2 + 15;
 	return cv::Point((int)x, (int)y);
 }
 
 cv::Point Pedestrian::GetBottomRight()
 {
 	float x = feature.x + rect.width / 2;
-	float y = feature.y + rect.height / 2;
+	float y = feature.y + rect.height / 2 + 15;
 	return cv::Point((int)x, (int)y);
 }
 
 bool Pedestrian::Equals(cv::Point p)
 {
 	return feature.x == p.x && feature.y == p.y;
+}
+
+bool Pedestrian::GotBiggerRect(cv::Rect rect)
+{
+	bool width = rect.width < this->rect.width;
+	bool height = rect.height < this->rect.width;
+	return width || height;
 }

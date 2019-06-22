@@ -132,3 +132,9 @@ void CCameraTrackerDoc::SetAnalyzerGrouping(bool status)
 {
 	frmProc->grouping = status;
 }
+
+void CCameraTrackerDoc::SetAsMarked(unsigned int x, unsigned int y)
+{
+	cv::Point point = cv::Point(x, y);
+	frmProc->SetAsMarked(point);
+}

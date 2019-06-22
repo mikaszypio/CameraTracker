@@ -29,6 +29,7 @@ public:
 	void SetAnalyzerOnOff(bool status);
 	void SetPause(bool status);
 	void SetAnalyzerGrouping(bool status);
+	void SetAsMarked(unsigned int x, unsigned int y);
 // Przesłania
 public:
 	virtual BOOL OnNewDocument();

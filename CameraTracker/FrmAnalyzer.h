@@ -9,11 +9,14 @@ private:
 	std::vector<cv::Point2f> features;
 	int FindPedestrian(cv::Point2f feature, std::vector<Pedestrian> pedestrians);
 	int IsDuplicate(Pedestrian ped, std::vector<Pedestrian> pedestrians);
+	std::vector<Pedestrian> RemoveDuplicates(std::vector<Pedestrian> pedestrians);
 protected:
 	cv::HOGDescriptor hogDescriptor;
 	static cv::Scalar colorBlue;
 	static cv::Scalar colorRed;
+	static cv::Scalar colorGreen;
 	std::vector<Pedestrian> lastSilhouettes;
+	std::vector<Pedestrian> pedestrians;
 	Pedestrian DrawVector(cv::Mat frm, Pedestrian prevPed, Pedestrian ped);
 	cv::Point GetCentralPoint(cv::Rect rect);
 	cv::Point GetVectorEnd(cv::Point p1, cv::Point p2);
@@ -24,5 +27,7 @@ public:
 	FrmAnalyzer();
 	cv::Mat DetectSilhouettes(cv::Mat frm, double scale = 1.05, double weight = -1, double hitThresh = 0,
 		cv::Size winStride = cv::Size(), cv::Size padding = cv::Size(), bool grouping = false);
+	void clear();
+	void MarkSilhouette(cv::Point point);
 };
 
